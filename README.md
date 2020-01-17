@@ -2,5 +2,5 @@
 
 ## Abstract
 
-# Reference
-inspired by https://github.com/joerg/abschlussarbeit-tuwien-physik
+
+latex inspired by https://github.com/joerg/abschlussarbeit-tuwien-physik
