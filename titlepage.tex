@@ -1,0 +1,115 @@
+\makeatletter
+\define@cmdkey{thesisTitlePage}{author}[Max Mustermann]{}
+\define@cmdkey{thesisTitlePage}{title}[Titel]{}
+\define@cmdkey{thesisTitlePage}{institute}[Institut]{}
+\define@cmdkey{thesisTitlePage}{prof}[Professor]{}
+\define@cmdkey{thesisTitlePage}{address}[Adresse]{}
+\define@cmdkey{thesisTitlePage}{type}[Typ der Arbeit]{}
+\newcommand{\setThesisTitlePage}[1]{\setkeys{thesisTitlePage}{#1}}
+
+% Default Werte für die Variablen
+\setkeys{thesisTitlePage}{
+	author=Max Mustermann,
+	title=Titel,
+	institute=Institut,
+	prof=Professor,
+	address=Adresse des Autors,
+	type=bacc
+}{}
+
+\newcommand*{\thesisTitlePage}{
+	\begingroup % Create the command for including the title page in the document
+	\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
+	\begin{titlepage}
+	
+	
+	\begin{tabular}{ >{\centering}p{9cm} >{\centering}p{7cm} }
+		\space & {\line(1,0){120}\\Signature of Advisor}
+	\end{tabular}
+	
+	\begin{center}
+	
+	% Upper part of the page
+	\begin{figure}[h]
+		\centering
+			\includegraphics[width=0.5\textwidth]{figures/tu_wien_logo.pdf}
+		 %Logo gracefully taken from http:www.tuwien.ac.at/dle/pr/publishing_web_print/corporate_design/tu_logo/
+	\end{figure}
+	
+	\vspace{\stretch{1}}
+	\begin{LARGE}
+	
+	\par\noindent%
+	 \IfStrEqCase{\cmdKV@thesisTitlePage@type}{%
+	  {sem}{SEMINARARBEIT}%
+	  {bacc}{Bachelor thesis}%
+	  {proj}{Project thesis}%
+	  {mast}{DIPLOMARBEIT}% Laut Auskunft Dekanat muss auch eine Masterarbeit DIPLOMARBEIT heißen
+	  {dipl}{DIPLOMARBEIT}%
+	  {diss}{DISSERTATION}%
+	  }[\cmdKV@thesisTitlePage@type]
+	
+	\vspace{\stretch{1.8}}
+	
+	\textbf{\cmdKV@thesisTitlePage@title} \\
+	
+	\end{LARGE}
+	
+	\vspace{\stretch{1.8}}
+	\begin{large}
+	\cmdKV@thesisTitlePage@institute \\
+	TU Wien
+	
+	\vspace{\stretch{0.5}}
+	
+	Supervisors: \\
+	\textbf{\cmdKV@thesisTitlePage@prof}
+	
+	\vspace{\stretch{1}}
+	
+	by \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\textbf{\cmdKV@thesisTitlePage@author} \\
+	
+	\vspace{\stretch{0.3}}
+	
+	\cmdKV@thesisTitlePage@address \\
+	
+	\vspace{\stretch{2}}
+	
+	\begin{tabular}{ >{\centering}p{7cm} >{\centering}p{7cm} }
+	\centering
+	\today & \line(1,0){120}\\Signature of Author
+	\end{tabular}
+	\end{large}
+	
+	\end{center}
+	\end{titlepage}
+	\restoregeometry
+	\endgroup
+}
+
+\newcommand*{\thesisTitlePageBlank}{
+	\begingroup % Create the command for including the title page in the document
+	\newgeometry{bottom=2cm, top=2cm, left=3cm, right=2cm}
+	\begin{titlepage}
+	\begin{center}
+	\vspace{\stretch{1}}
+	\begin{LARGE}
+	\vspace{\stretch{1.8}}
+	\textbf{\cmdKV@thesisTitlePage@title} \\
+	\end{LARGE}
+	\vspace{\stretch{1.8}}
+	\begin{large}
+	by \\
+	\vspace{\stretch{0.3}}
+	\textbf{\cmdKV@thesisTitlePage@author}
+	\end{large}
+	\end{center}
+	\end{titlepage}
+	\restoregeometry
+	\endgroup
+}
+\makeatother
