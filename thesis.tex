@@ -28,8 +28,6 @@
 \pagenumbering{gobble} % Keine Seitenzahl drucken
 \thesisTitlePage
 
-\chapter*{Abstract}
-\label{ch:abstract}
 \input{chapters/00_abstract.tex}
 
 \tableofcontents \newpage
@@ -38,32 +36,12 @@
 % Falls es Probleme gibt hilft auch der Befehl \blankpage (siehe header.tex)
 \pagenumbering{arabic} \setcounter{page}{1}
 
-\chapter{Motivation}
-\label{ch:motivation}
 \input{chapters/01_motivation.tex}
-
-\chapter{Background}
-\label{ch:background}
 \input{chapters/02_background.tex}
-
-\chapter{Method}
-\label{ch:method}
 \input{chapters/03_method.tex}
-
-\chapter{Implementation}
-\label{ch:impl}
 \input{chapters/04_implementation.tex}
-
-\chapter{Evaluation}
-\label{ch:evaluation}
 \input{chapters/05_evaluation.tex}
-
-\chapter{Conclusion}
-\label{ch:conclusion}
 \input{chapters/06_conclusion.tex}
-
-\chapter{Outlook}
-\label{ch:outlook}
 \input{chapters/07_outlook.tex}
 
 \cleardoublepage
@@ -71,3 +49,4 @@
 \printbibliography
 
 \end{document}
+
