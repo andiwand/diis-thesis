@@ -2,16 +2,23 @@
 \label{ch:method}
 
 \section{w2dynamic}
-% TODO what is it, who wrote it
-% TODO qmc background?
+
+w2dynamics\cite{w2dyn} is a hybridization-expansion continuous-time quantum Monte Carlo package, developed jointly in Wien and Würzburg. It was written by N. Parragh, M. Wallerberger, A. Hausoel, P. Gunacker, A. Kowalski, F.Goth and G. Sangiovanni. w2dynamics contains a multi-orbital quantum impurity solver for the Anderson impurity model, a dynamical mean field theory self-consistency loop, a maximum-entropy analytic continuation, as well as coupling to density functional theory. The dynamical mean field theory (DMFT) self-consistency loop was in focus of this project.
 
 \section{Cluster computing}
-% TODO general, hclm, vsc
-% TODO why do we need a cluster
+
+Since each iteration of the DMFT cycle involves a quantum Monte Carlo simulation with a high amount of measurements to get numerical stable results, w2dynamics has to be excecuted on a cluster. Most of the time was spent on the HCLM cluster with debugging and testing. The wait time is small compared to VSC-3 and the performance compareable for this specific workload.
 
 \section{Programming language}
-% TODO python, numpy, matplotlib
+% TODO h5py?
+
+w2dynamics is written two languages. The computational heavy parts are written in Fortran to get high performance. The rest, which is mostly glue code, configuration, as well as the self-consistency loop for DMFT, is written in Python for simplicity. The programming language of choice for this project was Python since a mixing template was already in place.
+
+Besides Python and its standard library this project relied heavily on numpy as linear algebra framework and pyplot for plotting and debugging.
 
 \section{Tools}
-% TODO git, hgrep
+
+w2dynamic resides in a git repository at the University of Würzburg. One part of this project was to create a new branch for the DIIS mixing and to get it merged.
+
+hgrep is a universal tool for printing and plotting outputs. It is part a of the w2dynamic repository and written in Python.
 
