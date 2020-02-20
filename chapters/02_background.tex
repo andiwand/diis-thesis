@@ -23,7 +23,6 @@ Consider a function \(\varphi\colon M \to M\) and a starting point \(x_0 \in M\)
 The Banach fixed-point theorem guarantees that the sequence converges to the single fixed-point \(\varphi(x^\ast) = x^\ast\) if \(M\) is a complete metric space and \(\varphi\) is a contraction.
 
 \section{Mixing}
-
 Mixing is a technique to improve convergence for self-consistency iteration. The idea is to construct a more effective trial with more information than just the previous result. To be effective such a trial has to be closer to the true value which means we want to extrapolate in terms of iterations.
 
 The simplest approach is linear mixing
@@ -37,9 +36,7 @@ For \(\beta > 1\) we get over-relaxation which can have predictive behaviour and
 More complex mixing techniques use trials and results of multiple previous iterations and try to combine under-relaxation for robustness and prediction to increase the rate of convergence.
 
 \section{DIIS}
-% TODO mention svd? -> maybe better for outlook
-
-The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay. His intention was to accelerate and stabelize the convergence of the Hartree-Fock self-consistent field method.\cite{diis_pulay1}\cite{diis_pulay2} % TODO dft
+The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay. His intention was to accelerate and stabelize the convergence of the Hartree-Fock self-consistent field method.\cite{diis_pulay1}\cite{diis_pulay2} Besides that, DIIS was successfully applied to accelerate the Self-Consistent Field (SCF) approach for Density Functional Theory (DFT) calculations.\cite{diis_restarted}
 
 DIIS uses trials and results of multiple previous iterations, constructs a linear combination of them, and extrapolates a new trial for the next iteration. The coefficients are determined by a least squares optimization.
 
