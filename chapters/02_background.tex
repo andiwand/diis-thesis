@@ -47,7 +47,7 @@ To get close to the real value \(x^\ast\) we set \(\sum_{j=0}^{m} c_j = 1\) and 
 \[\overline{f}_{k} = \sum_{j=0}^{m} c_j f_{k-j}\]
 In order to minimize \(\overline{f}_{k}\) we use the \(l^2\)-norm.
 
-One solution would be to use the Lagrange multiplier technique to satisfy the constraint \(\sum_{j=0}^{m} c_j = 1\) and minimize \(|\overline{f}_{k}|^2\).
+One solution would be to use the Lagrange multiplier technique to satisfy the constraint \(\sum_{j=0}^{m} c_j = 1\) and minimize \(|\overline{f}_{k}|^2\).\cite{diis_math}
 
 However, we can embed the constraint by rewriting \footnotemark
 \begin{equation} \label{eq:diis_f}
@@ -71,5 +71,5 @@ x_{k+1} = \overline{x}_k + \beta \overline{f}_k = x_k + \beta f_k - (X_k + \beta
 
 Variations of the DIIS method exist to further increase the rate of convergence and stability. The restarted Pulay method\cite{diis_restarted} and the periodic Pulay method\cite{diis_periodic} reset the state or use linear mixing inbetween to reduce side effects of DIIS.
 
-% TODO least squares interpretation
+One interpretation of \eqref{eq:diis_final} is that \((F_k^\dagger F_k)^{-1} F_k^\dagger\) is a regression operator to predict the weights $\Gamma_k$. The regression is trained with \(m\) previous observations and operates on the current observations \(f_k\). $\beta$ decides if we mix trials (\(\beta = 0\)) or results (\(\beta = 1\)).
 
