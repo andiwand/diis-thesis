@@ -14,8 +14,8 @@ import numpy as np
 from numpy.linalg import multi_dot
 
 class DiisMixer(object):
-  def __init__(self, oldshare, history, period):
-    self.alpha = 1 - oldshare
+  def __init__(self, old_share, history, period):
+    self.alpha = 1 - old_share
     self.history = history
     self.period = period
     
@@ -26,29 +26,29 @@ class DiisMixer(object):
   def __call__(self, new_value):
     if self.i == 0:
       # no history yet
-      result = new_value
+      new_trial = new_value
     else:
       trial = self.trials[-1]
       residual = new_value - trial
       self.residuals.append(residual)
       
       # trim history
-      self.trials = self.trials[:self.history]
-      self.residuals = self.residuals[:self.history]
+      self.trials = self.trials[-self.history:]
+      self.residuals = self.residuals[-self.history:]
       
-      if self.i <= 2 or (self.i % self.period) != 0:
+      if self.i <= 1 or (self.i % self.period) != 0:
         # linear mixing
-        result = trial + self.alpha * residual
+        new_trial = trial + self.alpha * residual
       else:
         # pulay mixing
         R = np.array(self.trials); R = R[1:] - R[:-1]; R = R.T
         F = np.array(self.residuals); F = F[1:] - F[:-1]; F = F.T
-        result = trial + self.alpha * residual - multi_dot([
+        new_trial = trial + self.alpha * residual - multi_dot([
             R + self.alpha * F, np.linalg.pinv(F), residual])
     
     self.i += 1
-    self.trials.append(result)
-    return result
+    self.trials.append(new_trial)
+    return new_trial
 \end{lstlisting}
 
 This DIIS mixing implementation works with real vectors. It is similar to the periodic Pulay method\cite{diis_periodic}. The most significant difference is the use of the pseudo inverse which exists even if \(F_k^\dagger F_k\) is not invertible.

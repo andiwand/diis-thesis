@@ -1,14 +1,12 @@
 \chapter{Conclusion and Outlook}
 \label{ch:conclusion_outlook}
-% TODO "small" dmft calculations converge similar but a bit slower
-% TODO "big" dmft calculations might benefit more -> further testing
+So far, only "small" DMFT calculations were used to evaluate the DIIS mixing. For these cases the rate of convergence is already high and the mixing does not further improve it. The more interesting case of "big" calculations needs further investigation.
 
-% TODO noise might be a problem for DIIS (comparing qmc vs symmetry thing)
-% TODO -> weighted least squares to handle qmc noise
-% TODO -> svd to cut-off noise
+Overall DIIS seems to be applicable for the self-consistency iteration of DMFT.
 
-% TODO anderson mixing?
+DIIS is able to handle complex quantities. The current implementation transforms the complex numbers into a larger array of real values. That might bias the estimation because this is only one way to represent complex numbers. Further investigation necessary.
 
-% TODO link section?
+DMFT with QMC is generating noisy outputs and seems to challenge DIIS' robustness. It might be possible to modify the DIIS algorithm to handle noise better. One way is to replace the least squares optimization by a weighted least squares optimization. The self-energy has an increasing uncertainty with higher frequencies but all frequencies are treated equally right now. A second way would be to look into the singular value decomposition of $F$ and remove singular values which only represent noise.
+
 As mentioned in the DIIS section, the algorithm can be interpreted as a regression. Since there are a lot of different regression techniques, especially in the field of machine learing, it might be interesting to try them. Besides that, the mixing algorithm could take advantage of incorporating prior knowledge from previous calculations.
 
