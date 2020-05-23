@@ -1,13 +1,15 @@
 \chapter{Implementation}
 \label{ch:impl}
-w2dynamics\cite{w2dyn}\cite{w2dyn_ref} is written two programming languages. The computational heavy parts are written in Fortran to get high performance. The rest, which is mostly glue code, configuration, as well as the self-consistency loop for DMFT, is written in Python. The programming language of choice for this project was Python since a linar mixing was already in place.
+w2dynamics\cite{w2dyn}\cite{w2dyn_ref} is written two programming languages. The computationally heavy parts are written in Fortran to get high performance. The rest, which is mostly glue code, configuration, as well as the self-consistency loop for DMFT, is written in Python. The programming language of choice for this project was Python since a linar mixing was already in place.
 
-The DIIS algorithm was implemented in the already existion module "w2dyn/dmft/selfcons.py". Besides that, only small changes were necessary in the existing code. Some glue code was changed in "DMFT.py" and some options were added to the configuration to allow switching between the mixing strategies and tweak parameters.
+The DIIS algorithm went into the existing module \texttt{w2dyn/dmft/selfcons.py}. Besides that, only small changes were necessary in the existing code. Some glue code was changed in \texttt{DMFT.py} and DIIS options were added to the configuration to allow switching between the mixing strategies and to set mixing parameters.
 
-Refactoring was required to allow mixing of multiple quantities at the same time. This also required to write a utility module that handles nested Python lists with ordinary floats, complex numbers and numpy arrays as entries.
+Refactoring was required to allow mixing of multiple quantities at the same time. That required to write a utility module that handles nested Python lists with ordinary floats, complex numbers and numpy arrays as entries.
 
 \section{DIIS}
 The existing linar mixing was a good starting point for the DIIS implementation. It was initially designed with the Factory pattern to allow the instantiation of multiple mixers with the same properties but for different quantities.
+
+This DIIS mixing implementation (\ref{lst:diis}) works with real vectors. It is similar to the periodic Pulay method\cite{diis_periodic}. The most significant difference is the use of the pseudo inverse which exists even if \(F_k^\dagger F_k\) is not invertible.
 
 \begin{lstlisting}[label=lst:diis, language=python, caption=DIIS implementation]
 import numpy as np
@@ -51,14 +53,12 @@ class DiisMixer(object):
     return new_trial
 \end{lstlisting}
 
-This DIIS mixing implementation works with real vectors. It is similar to the periodic Pulay method\cite{diis_periodic}. The most significant difference is the use of the pseudo inverse which exists even if \(F_k^\dagger F_k\) is not invertible.
-
 \section{Refactor}
 The first step of the refactoring was to remove the Factory pattern. This was necessary because we wanted to mix multiple quantities in one step. After instantiating a mixer with all the necessary parameters, it should be called with the quantities of the previous iteration and will then return a trial for the next iteration.
 
 The quantities we want to mix are not vectors but higher dimensional objects with complex numbers. To use our DIIS implementation in this case, we can naively reshape the data to a vector and seperate the real and imaginary part of the complex numbers. This functionality was implemented with the Decorator pattern.
 
-Since the quantities we want to mix do not necessarily have the same shape and type and usually would be passed as an ordinary Python list, it was necessary to write a module that can take care of flattening these objects to a one dimensional numpy array. This module was named "deepflatten" and is explained in the following section.
+Since the quantities we want to mix do not necessarily have the same shape and type and usually would be passed as an ordinary Python list, it was necessary to write a module that can take care of flattening these objects to a one dimensional numpy array. This module was named \texttt{deepflatten} and is explained in the following section.
 
 \begin{lstlisting}[label=lst:flatdec, language=python, caption=Flat mixing decorator]
 import w2dyn.auxiliaries.deepflatten as deepflatten
@@ -91,51 +91,65 @@ class RealMixingDecorator(object):
 \end{lstlisting}
 
 \section{Deep flatten}
-This module was written to flatten any nested Python lists with numbers and numpy arrays. Since these numbers and arrays do not agree in type and shape in general it is important to extract this information as a first step. This is done by the "types" and "shapes" functions. The "flatten" function creates a one dimensional numpy array out of the generic input.
+The module \texttt{deepflatten.py} was written to flatten any nested Python lists with numbers and numpy arrays. Since these numbers and arrays do not agree in type and shape in general it is important to extract this information as a first step. This is done by the \texttt{types} and \texttt{shapes} functions. The \texttt{flatten} function creates a one dimensional numpy array out of the generic input.
 
-After mixing the quantities it is important to restore the output to the original format. This can be done with the "restore" function. It needs the output of "types" and "shapes" to do so.
+After mixing the quantities it is important to restore the output to the original format. This can be done with the \texttt{restore} function. It needs the output of \texttt{types} and \texttt{shapes} to do so.
 
-The "deepflatten" module was placed at "w2dyn/auxiliaries/deepflatten.py".
+The \texttt{deepflatten} module was placed at \texttt{w2dyn/auxiliaries/deepflatten.py}.
 
 \begin{lstlisting}[label=lst:deepflat, language=python, caption=deepflatten.py]
 import numbers
 import numpy as np
 
 def types(x):
+  # numpy arrays can give us the type directly
   if type(x) is np.ndarray: return x.dtype
+  # ordinary numbers can give us the type directly
   if isinstance(x, numbers.Number): return type(x)
+  # we assume x is iterable and call `types` recursively
   result = []
   for i in x: result.append(types(i))
   return result
 
 def shapes(x):
+  # numpy arrays can give us the shape directly
   if type(x) is np.ndarray: return x.shape
+  # we use `1` as a symbol for an ordinary number
   if isinstance(x, numbers.Number): return 1
+  # we assume x is iterable and call `shapes` recursively
   result = []
   for i in x: result.append(shapes(i))
   return result
 
 def flatten(x):
+  # numpy arrays can be flattened directly
   if type(x) is np.ndarray: return x.flatten()
+  # ordinary numbers are flat
   if isinstance(x, numbers.Number): return np.array([x])
+  # we assume x is iterable and call `flatten` recursively
+  # to append everything to the result
   result = np.array([])
   for i in x: result = np.append(result, flatten(i))
   return result
 
 def restore(x, shapes, types):
-  def recursive(x, shapes, types):
+  def restore_(x, shapes, types):
+    # tuples represent the shape of numpy arrays
     if isinstance(shapes, tuple):
       size = np.prod(shapes)
       return x[:size].reshape(shapes).astype(types), size
+    # we used `1` as a symbol for an ordinary number
     if shapes == 1:
       return types(x[0]), 1
+    # we assume x is iterable and call `restore` recursively
     result = []
     offset = 0
     for s, t in zip(shapes, types):
-      tmp = recursive(x[offset:], s, t)
+      tmp = restore_(x[offset:], s, t)
       result.append(tmp[0])
       offset += tmp[1]
     return result, offset
-  return recursive(x, shapes, types)[0]
+  return restore_(x, shapes, types)[0]
+
 \end{lstlisting}
 

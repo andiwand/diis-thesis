@@ -5,8 +5,7 @@
 % TODO explain what x is in our case
 % TODO explain trial and result
 
-Dynamical mean-field theory (DMFT) is a method to determine the electronic structure of strongly correlated materials. It can be solved by a self-consistency iteration shown in figure \ref{fig:dmft}.
-It is basically a fixed-point iteration \(\varphi(x^\ast) = x^\ast\) with a very complicated, non-linear function \(\varphi\). $x$ is the self-engery $\Sigma$ and its moments $\Sigma_0$ and $\Sigma_1$.
+Dynamical mean-field theory (DMFT) is a method to determine the electronic structure of strongly correlated materials. It consists of a self-consistency iteration \(\varphi(x^\ast) = x^\ast\), shown in figure \ref{fig:dmft}, with a very complicated, non-linear function \(\varphi\). $x$ is the self-engery $\Sigma$ and its moments $\Sigma_0$ and $\Sigma_1$.
 
 \begin{figure}[H]
     \centering
@@ -18,28 +17,30 @@ It is basically a fixed-point iteration \(\varphi(x^\ast) = x^\ast\) with a very
 \section{Mixing}
 Mixing is a technique to improve convergence for self-consistency iteration. The idea is to construct a more effective trial with more information than just the previous result. To be effective such a trial has to be closer to the true value which means we want to extrapolate in terms of iterations.
 
+From now on we will use $x_k$ as the $k$th iteration trial, $\varphi(x_k)$ as the $k$th iteration result and $x^\ast$ as the true value.
+
 The simplest approach is linear mixing
 \begin{equation} \label{eq:linmix}
-\hat{x}_k = (1-\beta) x_k + \beta \varphi(x_k) = x_k + \beta (\varphi(x_k) - x_k)
+x_{k+1} = (1-\beta) x_k + \beta \varphi(x_k) = x_k + \beta (\varphi(x_k) - x_k)
 \end{equation}
 with the relaxation parameter \(\beta\).
 For \(0 < \beta < 1\) we get an under-relaxation which slows down convergence in some cases, but also dampens oscillations. If the self-consistency iterations diverge, the use of under-relaxation might help out.
 For \(\beta > 1\) we get over-relaxation which can have predictive behaviour and speed up the convergence but it also amplifies errors and might result in divergence.
 
-More complex mixing techniques use trials and results of multiple previous iterations and try to combine under-relaxation for robustness and prediction to increase the rate of convergence.
+More complex mixing techniques use trials and results of multiple previous iterations and try to combine under-relaxation for robustness and prediction to increase the rate of convergence.\cite{anderson_mixing}
 
 \section{DIIS}
-The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay. His intention was to accelerate and stabelize the convergence of the Hartree-Fock self-consistent field method.\cite{diis_pulay1}\cite{diis_pulay2} Besides that, DIIS was successfully applied to accelerate the Self-Consistent Field (SCF) approach for Density Functional Theory (DFT) calculations.\cite{diis_restarted}
+The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay.\cite{diis_pulay1}\cite{diis_pulay2} His intention was to accelerate and stabelize the convergence of the Hartree-Fock self-consistent field method. Besides that, DIIS was successfully applied to accelerate the Self-Consistent Field (SCF) approach for Density Functional Theory (DFT) calculations.\cite{diis_restarted}
 
 DIIS uses trials and results of multiple previous iterations, constructs a linear combination of them, and extrapolates a new trial for the next iteration. The coefficients are determined by a least squares optimization.
 
-Pulay's DIIS attempts to guess a better trial by using multiple previous trials and results. The method assumes that a good approximation of the true value \(x^\ast\) can be obtained by a linear combination of the previous trials.
+Pulay's DIIS attempts to construct a better trial by using multiple previous trials and results. The method assumes that a good approximation of the true value \(x^\ast\) can be obtained by a linear combination of the previous trials.
 \begin{equation} \label{eq:diis_x}
 \overline{x}_{k} = \sum_{j=0}^{m} c_j x_{k-j}
 \end{equation}
 where \(m\) is the number of previous trials to consider. We can also write this sum in terms of the true value \(x^\ast\) and an error vector \(e_{k} = x^\ast - x_{k}\).
 \[\overline{x}_{k} = \sum_{j=0}^{m} c_j (x^\ast + e_{k-j}) = x^\ast \sum_{j=0}^{m} c_j + \sum_{j=0}^{m} c_j e_{k-j}\]
-To get close to the real value \(x^\ast\) we set \(\sum_{j=0}^{m} c_j = 1\) and try to minimize the second term \(\sum_{j=0}^{m} c_j e_{k-j}\). But since we do not know the true value \(x^\ast\) we cannot know \(e_{k}\). Therefore, we approximate \(e_{k}\) by the residuals, i.e. \(e_{k} \approx f_{k} = g(x_k) - x_k\).
+To get close to the true value \(x^\ast\) we set \(\sum_{j=0}^{m} c_j = 1\) and try to minimize the second term \(\sum_{j=0}^{m} c_j e_{k-j}\). But since we do not know the true value \(x^\ast\) we cannot know \(e_{k}\). Therefore, we approximate \(e_{k}\) by the residuals, i.e. \(e_{k} \approx f_{k} = g(x_k) - x_k\).
 \[\overline{f}_{k} = \sum_{j=0}^{m} c_j f_{k-j}\]
 In order to minimize \(\overline{f}_{k}\) we use the \(l^2\)-norm.
 
@@ -58,7 +59,7 @@ We minimize \(|\overline{f}_{k}|^2\) by \(\Gamma_k\) and get the solution \footn
 \Gamma_k = (F_k^\dagger F_k)^{-1} F_k^\dagger f_k = F_k^+ f_k
 \end{equation}
 
-\footnotetext{The last equals is only true if \(F_k^\dagger F_k\) is invertible. The Moore–Penrose inverse exists even if that is not the case.}
+\footnotetext{The last equality is only true if \(F_k^\dagger F_k\) is invertible. The Moore–Penrose inverse exists even if that is not the case.}
 
 Similar to \eqref{eq:linmix} we can construct a new trial with \eqref{eq:diis_x}, \eqref{eq:diis_f} and \eqref{eq:diis_gamma}.
 \begin{equation} \label{eq:diis_final}
@@ -67,5 +68,5 @@ x_{k+1} = \overline{x}_k + \beta \overline{f}_k = x_k + \beta f_k - (X_k + \beta
 
 One interpretation of \eqref{eq:diis_final} is that \((F_k^\dagger F_k)^{-1} F_k^\dagger\) is a regression to predict the transformed weights $\Gamma_k$. The regression is trained with \(m\) previous observations and operates on the current observations \(f_k\). $\beta$ decides if we mix trials (\(\beta = 0\)) or results (\(\beta = 1\)).
 
-Variations of the DIIS method exist to further increase the rate of convergence and stability. The restarted Pulay method\cite{diis_restarted} and the periodic Pulay method\cite{diis_periodic} reset the state or use linear mixing inbetween to reduce side effects of DIIS.
+Variations of the DIIS method exist to further increase the rate of convergence and stability. The restarted Pulay method\cite{diis_restarted} and the periodic Pulay method\cite{diis_periodic} reset the state or use linear mixing in between to reduce side effects of DIIS.
 
