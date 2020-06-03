@@ -2,7 +2,7 @@
 \label{ch:evaluation}
 The hclm cluster was used to evaluate the performance of DIIS for mixing the self-energy. We decided to use reasonably small calculations that would finish in a few hours.
 
-For each testing, we considered a square-lattice Hubbard model Hubbard model at interaction $U=8t$ and temperature $T=t/50$, where $t$ is the hopping amplitude.
+For each testing, we considered a square-lattice Hubbard model at interaction $U=8t$ and temperature $T=t/50$, where $t$ is the hopping amplitude.
 
 \lstdefinelanguage{ini}{
   basicstyle=\ttfamily\small,
@@ -56,8 +56,17 @@ The baseline was given by the same configuration, but without DIIS mixing.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{figures/square_u08_b50_siw_imag.png}
-    \caption{DMFT iteration comparison for Matsubara frequency 0}
-    \label{fig:eval-diis-1}
+    \includegraphics[width=1.0\textwidth]{figures/square_u08_b50_siw_imag_giw_imag.png}
+    \caption{DMFT iteration comparison for Matsubara frequency 0 and $U=8t$}
+    \label{fig:eval-diis-u8}
 \end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/square_u12_b50_siw_imag_giw_imag.png}
+    \caption{DMFT iteration comparison for Matsubara frequency 0 and $U=12t$}
+    \label{fig:eval-diis-u12}
+\end{figure}
+
+We can see that in figure \ref{fig:eval-diis-u8} that the rate of convergence is very similar with and without mixing. The next figure \ref{fig:eval-diis-u12} with higher $U$ shows a slower convergence in case of DIIS. We are assuming that this is caused by the QMC noise. A recent implementation of symmetric improved estimators\cite{symmetric} by Josef is promising better performance with DIIS.
 
