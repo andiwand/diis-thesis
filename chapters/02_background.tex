@@ -10,7 +10,7 @@ Dynamical mean-field theory (DMFT) is a method to determine the electronic struc
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/dmft.png}
-    \caption{Self-consistency loop of dynamical mean field theory for a Hubbard-type model. Image taken from Markus Wallerberger's dissertation.}
+    \caption{Self-consistency loop of dynamical mean field theory for a Hubbard-type model. Image taken from Markus Wallerberger's dissertation.\cite{wallerberger2016}}
     \label{fig:dmft}
 \end{figure}
 
@@ -30,7 +30,7 @@ For \(\beta > 1\) we get over-relaxation which can have predictive behaviour and
 More complex mixing techniques use trials and results of multiple previous iterations and try to combine under-relaxation for robustness and prediction to increase the rate of convergence.\cite{anderson_mixing}
 
 \section{DIIS}
-The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay.\cite{diis_pulay1}\cite{diis_pulay2} His intention was to accelerate and stabelize the convergence of the Hartree-Fock self-consistent field method. Besides that, DIIS was successfully applied to accelerate the Self-Consistent Field (SCF) approach for Density Functional Theory (DFT) calculations.\cite{diis_restarted}
+The direct inversion of the iterative subspace (DIIS), also known as Pulay mixing, is an extrapolation technique developed by Peter Pulay.\cite{diis_pulay1}\cite{diis_pulay2} His intention was to accelerate and stabilize the convergence of the Hartree-Fock self-consistent field method. Besides that, DIIS was successfully applied to accelerate the Self-Consistent Field (SCF) approach for Density Functional Theory (DFT) calculations.\cite{diis_restarted}
 
 DIIS uses trials and results of multiple previous iterations, constructs a linear combination of them, and extrapolates a new trial for the next iteration. The coefficients are determined by a least squares optimization.
 
