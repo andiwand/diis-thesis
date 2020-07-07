@@ -1,13 +1,13 @@
 \chapter{Implementation}
 \label{ch:impl}
-w2dynamics\cite{w2dyn}\cite{w2dyn_ref} is written two programming languages. The computationally heavy parts are written in Fortran to get high performance. The rest, which is mostly glue code, configuration, as well as the self-consistency loop for DMFT, is written in Python. The programming language of choice for this project was Python since a linar mixing was already in place.
+w2dynamics\cite{w2dyn}\cite{w2dyn_ref} is written in two programming languages. The computationally heavy parts are written in Fortran to get high performance. The rest, which is mostly glue code, configuration, as well as the self-consistency loop for DMFT, is written in Python. The programming language of choice for this project was Python as here the previously used linar mixing is done.
 
-The DIIS algorithm went into the existing module \texttt{w2dyn/dmft/selfcons.py}. Besides that, only small changes were necessary in the existing code. Some glue code was changed in \texttt{DMFT.py} and DIIS options were added to the configuration to allow switching between the mixing strategies and to set mixing parameters.
+The DIIS algorithm is implemented into the existing module \texttt{selfcons.py}. Besides that, only small changes were necessary in the existing code. Some glue code was changed in \texttt{DMFT.py} and DIIS options were added to the configuration to allow switching between the mixing strategies and to set mixing parameters.
 
 Refactoring was required to allow mixing of multiple quantities at the same time. That required to write a utility module that handles nested Python lists with ordinary floats, complex numbers and numpy arrays as entries.
 
 \section{DIIS}
-The existing linar mixing was a good starting point for the DIIS implementation. It was initially designed with the Factory pattern to allow the instantiation of multiple mixers with the same properties but for different quantities.
+The existing linar mixing was a good starting point for the DIIS implementation. It was initially designed with the Factory pattern to allow the instantiation of multiple mixers with the same properties but for different quantities like self-engery $\Sigma$ and its moments $\Sigma_0$ and $\Sigma_1$.
 
 This DIIS mixing implementation (\ref{lst:diis}) works with real vectors. It is similar to the periodic Pulay method\cite{diis_periodic}. The most significant difference is the use of the pseudo inverse which exists even if \(F_k^\dagger F_k\) is not invertible.
 

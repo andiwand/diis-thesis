@@ -52,7 +52,7 @@ Eigenbasis=1
 MeasGiw=1
 \end{lstlisting}
 
-The reference was given by the same configuration, but without DIIS mixing. It was important to compare the results with and without DIIS to see if they agree. Different results would be a hint to a bug in the implementation or that DIIS is not applicable for these inputs or DMFT in general.
+The reference was given by the same configuration, but without DIIS mixing. It was important to compare the results with and without DIIS to see if they agree. Different results would be a hint to a bug in the implementation or that DIIS is not applicable for these inputs or DMFT in general. The configuration file is given in listing \ref{fig:eval-diis-u8}.
 
 \begin{figure}[H]
     \centering
@@ -70,5 +70,5 @@ The reference was given by the same configuration, but without DIIS mixing. It w
 
 We can see that in figure \ref{fig:eval-diis-u8} that the result is the same with and without mixing while the rate of convergence is very similar.
 
-A higher $U$ in figure \ref{fig:eval-diis-u12} shows a slower convergence in case of DIIS while the result is still the same. We are assuming that this is caused by the QMC noise. A recent implementation of symmetric improved estimators\cite{symmetric} by Josef is promising better performance with DIIS.
+A higher $U$ in figure \ref{fig:eval-diis-u12} shows a slower convergence in case of DIIS while the result is still the same. We are assuming that this is caused by the QMC noise. The DIIS appears to suppress this noise. A recent implementation of symmetric improved estimators\cite{symmetric} by Josef Kaufmann is promising better performance with DIIS.
 
