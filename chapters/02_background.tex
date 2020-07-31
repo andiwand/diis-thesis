@@ -2,9 +2,6 @@
 \label{ch:background}
 
 \section{DMFT}
-% TODO explain what x is in our case
-% TODO explain trial and result
-
 Dynamical mean-field theory (DMFT)\cite{dmft} is a method to determine the electronic structure of strongly correlated materials. It consists of a self-consistency iteration \(\varphi(x^\ast) = x^\ast\), shown in figure \ref{fig:dmft}, with a very complicated, non-linear function \(\varphi\). $x$ is the self-engery $\Sigma$ and its moments $\Sigma_0$ and $\Sigma_1$.
 
 \begin{figure}[H]
@@ -36,35 +33,38 @@ DIIS uses trials and results of multiple previous iterations, constructs a linea
 
 Pulay's DIIS attempts to construct a better trial by using multiple previous trials and results. The method assumes that a good approximation of the true value \(x^\ast\) can be obtained by a linear combination of the previous trials. That is,
 \begin{equation} \label{eq:diis_x}
-\overline{x}_{k} = \sum_{j=0}^{m} c_j x_{k-j}
+\overline{x}_{k} = \sum_{j=0}^{m} c_j^k x_{k-j}
 \end{equation}
 where \(m\) is the number of previous trials to consider. We can also write this sum in terms of the true value \(x^\ast\) and an error vector \(e_{k} = x^\ast - x_{k}\).
-\[\overline{x}_{k} = \sum_{j=0}^{m} c_j (x^\ast + e_{k-j}) = x^\ast \sum_{j=0}^{m} c_j + \sum_{j=0}^{m} c_j e_{k-j}\]
-To get close to the true value \(x^\ast\) we set \(\sum_{j=0}^{m} c_j = 1\) and try to minimize the second term \(\sum_{j=0}^{m} c_j e_{k-j}\). But since we do not know the true value \(x^\ast\) we cannot know \(e_{k}\). Therefore, we approximate \(e_{k}\) by the residuals, i.e. \(e_{k} \approx f_{k} = g(x_k) - x_k\):
-\[\overline{f}_{k} = \sum_{j=0}^{m} c_j f_{k-j}\].
+\[\overline{x}_{k} = \sum_{j=0}^{m} c_j^k (x^\ast + e_{k-j}) = x^\ast \sum_{j=0}^{m} c_j^k + \sum_{j=0}^{m} c_j^k e_{k-j}\]
+To get close to the true value \(x^\ast\) we set \(\sum_{j=0}^{m} c_j^k = 1\) and try to minimize the second term \(\sum_{j=0}^{m} c_j^k e_{k-j}\). But since we do not know the true value \(x^\ast\) we cannot know \(e_{k}\). Therefore, we approximate \(e_{k}\) by the residuals, i.e. \(e_{k} \approx f_{k} = g(x_k) - x_k\):
+\begin{equation}
+\overline{f}_{k} = \sum_{j=0}^{m} c_j^k f_{k-j}
+\end{equation}
 In order to minimize \(\overline{f}_{k}\) we use the \(l^2\)-norm.
 
-One solution would be to use the Lagrange multiplier technique to satisfy the constraint \(\sum_{j=0}^{m} c_j = 1\) and minimize \(|\overline{f}_{k}|^2\).\cite{diis_math}
+One solution would be to use the Lagrange multiplier technique to satisfy the constraint \(\sum_{j=0}^{m} c_j^k = 1\) and minimize \(|\overline{f}_{k}|^2\).\cite{diis_math}
 
 However, we can embed the constraint by rewriting \footnotemark
 \begin{equation} \label{eq:diis_f}
-\overline{f}_{k} = \sum_{j=0}^{m} c_j f_{k-j} = f_k - \sum_{j=1}^{m} \gamma_j {\Delta f}_{k-m+j} = f_k - F_k \Gamma_k
+\overline{f}_{k} = \sum_{j=0}^{m} c_j^k f_{k-j} = f_k - \sum_{j=1}^{m} \gamma_j^k {\Delta f}_{k-m+j} = f_k - F_k \Gamma_k
 \end{equation}
-with \({\Delta f}_{k} = f_k - f_{k-1}\), \(F_k = [{\Delta f}_{k-m+j}]_{j=1..m}\) and \(\Gamma_k = [\gamma_j]_{j=1..m}\).
+with the column vector \({\Delta f}_{k} = f_k - f_{k-1}\), the matrix \(F_k = [{\Delta f}_{k-m+j}]_{j=1..m}\) and the column vector \(\Gamma_k = [\gamma_j^k]_{j=1..m}\).
 
-\footnotetext{For example with \(m=2\) we get \(\overline{f}_{k} = f_k - \gamma_1 {\Delta f}_{k-1} - \gamma_2 {\Delta f}_{k}\ = f_k - \gamma_1 (f_{k-1} - f_{k-2}) - \gamma_2 (f_k - f_{k-1}) = (1-\gamma_2) f_k + (\gamma_2 - \gamma_1) f_{k-1} + \gamma_1 f_{k-2} = c_0 f_k + c_1 f_{k-1} + c_2 f_{k-2}\). Equating coefficients leads to \(\sum_{j=0}^{m} c_j = 1\).}
+\footnotetext{For example with \(m=2\) we get \(\overline{f}_{k} = f_k - \gamma_1^k {\Delta f}_{k-1} - \gamma_2^k {\Delta f}_{k}\ = f_k - \gamma_1^k (f_{k-1} - f_{k-2}) - \gamma_2^k (f_k - f_{k-1}) = (1-\gamma_2^k) f_k + (\gamma_2^k - \gamma_1^k) f_{k-1} + \gamma_1^k f_{k-2} = c_0 f_k + c_1 f_{k-1} + c_2 f_{k-2}\). Equating coefficients leads to \(\sum_{j=0}^{m} c_j^k = 1\).}
 
 We minimize \(|\overline{f}_{k}|^2\) by \(\Gamma_k\) and get the solution \footnotemark
 \begin{equation} \label{eq:diis_gamma}
-\Gamma_k = (F_k^\dagger F_k)^{-1} F_k^\dagger f_k = F_k^+ f_k
+\Gamma_k = (F_k^\dagger F_k)^{-1} F_k^\dagger f_k
 \end{equation}
 
-\footnotetext{The last equality is only true if \(F_k^\dagger F_k\) is invertible. The Moore–Penrose inverse exists even if that is not the case.}
+\footnotetext{$\Gamma_k$ only exists if $F_k^\dagger F_k$ is invertible. The Moore–Penrose inverse $F_k^+$ exists even if that is not the case. Which would lead to the solution $\Gamma_k = F_k^+ f_k$.}
 
 Similar to \eqref{eq:linmix} we can construct a new trial with \eqref{eq:diis_x}, \eqref{eq:diis_f} and \eqref{eq:diis_gamma}.
 \begin{equation} \label{eq:diis_final}
 x_{k+1} = \overline{x}_k + \beta \overline{f}_k = x_k + \beta f_k - (X_k + \beta F_k) (F_k^\dagger F_k)^{-1} F_k^\dagger f_k
 \end{equation}
+with the matrix \(X_k = [{\Delta x}_{k-m+j}]_{j=1..m}\) and the column vector \({\Delta x}_{k} = x_k - x_{k-1}\).
 
 One interpretation of \eqref{eq:diis_final} is that \((F_k^\dagger F_k)^{-1} F_k^\dagger\) is a regression to predict the transformed weights $\Gamma_k$. The regression is trained with \(m\) previous observations and operates on the current observations \(f_k\). $\beta$ decides if we mix trials (\(\beta = 0\)) or results (\(\beta = 1\)).
 
